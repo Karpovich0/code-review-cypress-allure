@@ -1,0 +1,7 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Sun Aug 21 23:25:40 UTC 2022","Sun Aug 21 23:25:49 UTC 2022","9403","","Login Functionality","","","","login with invalid password credentials read data from fixture",""
+"passed","Sun Aug 21 23:26:39 UTC 2022","Sun Aug 21 23:26:42 UTC 2022","3374","","My Account Functionality","","","","Sample Test",""
+"passed","Sun Aug 21 23:25:10 UTC 2022","Sun Aug 21 23:25:29 UTC 2022","18999","","Login Functionality","","","","login with valid credentials read data from fixture",""
+"failed","Sun Aug 21 23:25:49 UTC 2022","Sun Aug 21 23:26:11 UTC 2022","22123","","Login Functionality","","","","login with wrong email format credentials read data from fixture",""
+"passed","Sun Aug 21 23:25:29 UTC 2022","Sun Aug 21 23:25:39 UTC 2022","10895","","Login Functionality","","","","login with invalid email credentials read data from fixture",""
+"passed","Sun Aug 21 23:24:45 UTC 2022","Sun Aug 21 23:25:09 UTC 2022","24919","","Login Functionality","","","","login with valid credentials",""
