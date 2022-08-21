@@ -1,41 +1,59 @@
-name: Cypress Tests using Cypress Docker Image with allure-report
-
-on:
+name: allure-report
+'on':
     push:
-        branches: [master]
-
+        branches:
+            - master
 jobs:
-    Run_test:
-        runs-on: ubuntu-20.04 # Choosing OS
-        strategy:
-            matrix:
-                node-version: [14.17.0]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    generate-report:
+        runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v2
+            - name: Download Cypress
+              uses: bahmutov/npm-install@v1
+              env:
+                  CYPRESS_INSTALL_BINARY: 0
+
+            - name: Check Cypress cache
+              run: |
+                  npx cypress cache path
+                  npx cypress cache list
+            - name: restore / cache the binary
+              id: cache-cypress
+              uses: actions/cache@v1
               with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: "npm"
-            - run: npm i npm@latest
-            - run: npm i
-            - name: run test
+                  path: ~/.cache/Cypress
+                  key: >-
+                      cypress-cache-v2-${{ runner.os }}-${{ hashFiles('**/package.json')
+                      }}
+            - name: Prepare Allure history
+              run: |
+                  rm -r allure-results/*
+                  cp -r ./allure-report/history ./allure-results/history
+                  rm -r allure-report/*
+            - name: Install Cypress
+              run: |
+                  npx cypress install
+                  npx cypress cache list
+            - name: Run Cypress
               run: npm run cy:run
-            - name: Create Report
+              env:
+                  CYPRESS_SPLIT_SPEC_API_KEY: '${{ secrets.SPLIT_SPEC_API_KEY }}'
+
+            - name: Generate Allure report
               if: always()
-              run: npm run allure:generate
-            - name: Upload artifact allure-report
-              uses: actions/upload-artifact@v1
+              uses: QuintilianoNery/action-allure-report-V2@0.2.0
+
+            - name: Commit report results
               if: always()
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+                  git add allure-report -f
+                  git add allure-results -f
+                  git commit -m "[chore] autogenerate Allure report" -a
+            - name: Push changes
+              if: always()
+              uses: ad-m/github-push-action@master
               with:
-                  name: allure-report
-                  path: ./allure-report
-            - name: Deploy report
-              uses: JamesIves/github-pages-deploy-action@master
-              if: always()
-              with:
-                  ACCESS_TOKEN: ${{'secrets.ACCESS_TOKEN'}}
-                  BRANCH: master # The branch the action should deploy to.
-                  FOLDER: allure-report # The folder the action should deploy.
-                  TARGET_FOLDER: docs
+                  github_token: '${{ secrets.GITHUB_TOKEN }}'
+                  force: true
