@@ -1,10 +1,7 @@
 name: Tests with reporter
 on:
   push:
-    branches: [ main, master ]
-
-permissions:
-  contents: write
+    branches: [ main ]
 
 jobs:
     Run_test:
@@ -38,7 +35,7 @@ jobs:
               if: always()
               with:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                  BRANCH: master # The branch the action should deploy to.
+                  BRANCH: main # The branch the action should deploy to.
                   FOLDER: allure-report # The folder the action should deploy.
                   TARGET_FOLDER: docs
 
